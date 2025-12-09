@@ -167,4 +167,5 @@ if __name__ == '__main__':
 ║   Mode: Manual Name and Position Input                        ║
 ╚═══════════════════════════════════════════════════════════════╝
         """)
-        app.run(debug=True, host='0.0.0.0', port=CERTIFICATE_PORT)
+        port = int(os.environ.get('PORT', CERTIFICATE_PORT))
+        app.run(debug=True, host='0.0.0.0', port=port)
