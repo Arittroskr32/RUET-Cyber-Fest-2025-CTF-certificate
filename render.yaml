@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: certificate-generator
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: CERTIFICATE_PORT
+        value: 10000
+      - key: SECRET_KEY
+        value: 828738724tgfdhbkdbhbbhdfvf
