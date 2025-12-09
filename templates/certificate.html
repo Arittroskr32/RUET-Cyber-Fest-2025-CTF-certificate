@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CTF Certificate Generator</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Montserrat:wght@300;400;600;700&family=Dancing+Script:wght@700&family=Cormorant+Garamond:wght@300;400;600&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background: linear-gradient(135deg, #001a1a 0%, #002633 50%, #001a1a 100%);
+            font-family: 'Montserrat', sans-serif;
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        /* Error Section */
+        .error-section {
+            background: rgba(255, 68, 68, 0.1);
+            border: 2px solid #ff4444;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .error-section h1 {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 1.5rem;
+            color: #ff4444;
+            margin-bottom: 20px;
+        }
+
+        .error-section p {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+
+        .error-section a {
+            display: inline-block;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #00d9ff 0%, #00a6cc 100%);
+            color: #000;
+            text-decoration: none;
+            border-radius: 5px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.7rem;
+        }
+
+        /* Controls Section */
+        .controls {
+            background: rgba(0, 26, 33, 0.8);
+            border: 2px solid #00d9ff;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 0 30px rgba(0, 217, 255, 0.3);
+        }
+
+        .controls h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #00d9ff;
+            margin-bottom: 20px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .user-info {
+            background: rgba(0, 217, 255, 0.1);
+            border: 1px solid #00d9ff;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .user-info div {
+            font-size: 0.9rem;
+        }
+
+        .user-info strong {
+            color: #00d9ff;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #00d9ff;
+            margin-bottom: 8px;
+            font-size: 0.83rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0, 20, 30, 0.5);
+            border: 1px solid #00d9ff;
+            color: #fff;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.88rem;
+            border-radius: 5px;
+        }
+
+        .form-group small {
+            color: #888;
+            font-size: 0.73rem;
+            display: block;
+            margin-top: 5px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        button, .btn {
+            flex: 1;
+            padding: 15px;
+            background: linear-gradient(135deg, #00d9ff 0%, #00a6cc 100%);
+            border: none;
+            color: #000;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+            border-radius: 5px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:hover { transform: translateY(-2px); }
+
+        /* Certificate */
+        .certificate-wrapper {
+            display: flex;
+            justify-content: center;
+            margin-top: 40px;
+            width: 100%;
+        }
+
+        .certificate {
+            width: 1200px;
+            max-width: 95vw;
+            aspect-ratio: 1.41;
+            background: #ffffff;
+            border: 25px solid #c9a961;
+            position: relative;
+            padding: 55px;
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.2), inset 0 0 0 3px #ffffff;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        .certificate::before {
+            content: '';
+            position: absolute;
+            top: 40px;
+            left: 40px;
+            right: 40px;
+            bottom: 40px;
+            border: 1.5px solid #8b7355;
+            pointer-events: none;
+        }
+
+
+
+        .corner {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            z-index: 10;
+        }
+
+        .corner::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 2px solid #8b7355;
+        }
+
+        .top-left { top: 48px; left: 48px; }
+        .top-left::before { border-right: none; border-bottom: none; }
+        .top-right { top: 48px; right: 48px; }
+        .top-right::before { border-left: none; border-bottom: none; }
+        .bottom-left { bottom: 48px; left: 48px; }
+        .bottom-left::before { border-right: none; border-top: none; }
+        .bottom-right { bottom: 48px; right: 48px; }
+        .bottom-right::before { border-left: none; border-top: none; }
+
+        .logo {
+            position: absolute;
+            top: 70px;
+            width: 100px;
+            object-fit: contain;
+            z-index: 5;
+        }
+
+        .logo-left {
+            left: 70px;
+        }
+
+        .logo-right {
+            right: 70px;
+            width: 150px;
+            top: 50px;
+        }
+
+        .event-badge {
+            position: absolute;
+            top: 40px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            z-index: 5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .event-badge-logo {
+            width: 160px;
+            height: auto;
+            display: block;
+        }
+
+        .event-badge-text {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.73rem;
+            font-weight: 700;
+            color: #8b7355;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+        }
+
+        .header {
+            text-align: center;
+            margin-top: 115px;
+            position: relative;
+            z-index: 5;
+        }
+
+        .header h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(2.68rem, 5.5vw, 3.68rem);
+            font-weight: 400;
+            color: #333;
+            font-style: italic;
+            letter-spacing: clamp(2px, 0.5vw, 3px);
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .header h2 {
+            font-family: 'Cormorant Garamond', serif;
+            color: #333;
+            font-size: clamp(1.68rem, 3.5vw, 2.38rem);
+            font-weight: 400;
+            font-style: italic;
+            margin-top: 0;
+            letter-spacing: clamp(1px, 0.3vw, 2px);
+            line-height: 1.3;
+        }
+
+        .content {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .presented-to {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.2rem;
+            font-weight: 400;
+            color: #666;
+            font-style: italic;
+            margin-bottom: 20px;
+            margin-top: 10px;
+        }
+
+        .participant-name {
+            font-family: 'Dancing Script', cursive;
+            font-size: clamp(3rem, 5.5vw, 4.5rem);
+            font-weight: 700;
+            margin: 10px 0;
+            color: #1a1a1a;
+            display: inline-block;
+            position: relative;
+            border-bottom: 2px solid #8b7355;
+            padding-bottom: 12px;
+            min-width: clamp(400px, 60%, 700px);
+            text-align: center;
+        }
+
+        .event-details {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(0.68rem, 1.6vw, 0.88rem);
+            font-weight: 500;
+            line-height: 1.8;
+            color: #333;
+            max-width: 75%;
+            margin: 10px auto;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+        }
+
+
+
+        .rank-info {
+            font-family: 'Montserrat', sans-serif;
+            display: inline-block;
+            margin-top: 15px;
+            color: #8b7355;
+            font-size: 1.18rem;
+            font-weight: 600;
+            padding: 8px 18px;
+            border: 2px solid #8b7355;
+            letter-spacing: 1px;
+        }
+
+        .points-info {
+            display: block;
+            margin-top: 12px;
+            color: #fff;
+            font-size: 1.2rem;
+        }
+
+        .signatures {
+            margin-top: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding: 0 clamp(50px, 10%, 120px);
+            min-height: 90px;
+            margin-bottom: 40px;
+            position: relative;
+            z-index: 5;
+        }
+
+        .sign-box {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        .sign-line {
+            width: 220px;
+            height: 1px;
+            background: #333;
+            margin-bottom: 5px;
+            margin-top: 10px;
+        }
+
+        .sign-name {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.98rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 3px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .sign-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.63rem;
+            font-weight: 500;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            text-align: center;
+            font-size: clamp(0.43rem, 0.9vw, 0.53rem);
+            color: #999;
+            left: 0;
+            letter-spacing: 0.5px;
+            z-index: 5;
+            padding: 0 40px;
+            word-break: break-all;
+        }
+
+        .hash {
+            color: #666;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            font-size: 0.75rem;
+        }
+
+        @media print {
+            * { 
+                -webkit-print-color-adjust: exact !important; 
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }
+            html, body { 
+                background: #001a26 !important; 
+                margin: 0 !important; 
+                padding: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+                overflow: hidden !important;
+            }
+            .container { 
+                background: transparent !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+            }
+            .controls, .error-section { display: none !important; }
+            .certificate-wrapper { 
+                margin: 0 !important; 
+                padding: 0 !important;
+                display: block !important;
+                width: 100% !important;
+                height: 100vh !important;
+                page-break-after: avoid !important;
+                background: #001a26 !important;
+                overflow: hidden !important;
+            }
+            .certificate { 
+                box-shadow: none !important;
+                page-break-inside: avoid !important;
+                page-break-after: avoid !important;
+                background: linear-gradient(135deg, #001a26 0%, #000d13 100%) !important;
+                width: 297mm !important;
+                height: 210mm !important;
+                margin: 0 !important;
+                transform: none !important;
+                padding: 45px 70px 80px 70px !important;
+                position: relative !important;
+            }
+            .signatures {
+                margin-top: 25px !important;
+                margin-bottom: 0 !important;
+            }
+            .footer {
+                bottom: 25px !important;
+                position: absolute !important;
+            }
+            @page { 
+                size: 297mm 210mm;
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        {% if error %}
+        <!-- Error Section -->
+        <div class="error-section">
+            <h1>⚠️ ERROR</h1>
+            <p>{{ error }}</p>
+        </div>
+        {% endif %}
+
+        {% if not certificate_generated %}
+        <!-- Input Form -->
+        <div class="controls">
+            <h2>🎓 CERTIFICATE GENERATOR</h2>
+            <form method="POST" action="/generate">
+                <div class="form-group">
+                    <label for="roll">Roll Number 🆔</label>
+                    <input type="text" id="roll" name="roll" placeholder="Enter participant's roll number" required>
+                    <small>💡 Enter the roll number to fetch name and position</small>
+                </div>
+                <div class="btn-group">
+                    <button type="submit">🎨 GENERATE CERTIFICATE</button>
+                </div>
+            </form>
+        </div>
+        {% endif %}
+
+        {% if certificate_generated %}
+        <!-- Download Section -->
+        <div class="controls">
+            <h2>✅ CERTIFICATE GENERATED</h2>
+            
+            <div style="background: rgba(0, 217, 255, 0.1); border: 2px solid #00d9ff; padding: 20px; border-radius: 5px; margin: 20px 0; text-align: center;">
+                <p style="color: #00d9ff; font-size: 1.1rem; margin-bottom: 10px;">🎉 <strong>Certificate Successfully Created!</strong></p>
+                <p style="color: #ccc; font-size: 0.9rem;">Name: <strong>{{ display_name }}</strong> | Position: <strong>{{ position }}</strong></p>
+                <p style="color: #888; font-size: 0.85rem; margin-top: 10px;">Hash: <span class="hash">{{ cert_hash }}</span></p>
+            </div>
+            
+            <div class="btn-group">
+                <button type="button" onclick="downloadPNG()">🖼️ DOWNLOAD PNG</button>
+                <a href="/" class="btn" style="background: linear-gradient(135deg, #555 0%, #333 100%); color: #fff;">🔄 NEW CERTIFICATE</a>
+            </div>
+        </div>
+
+        <!-- Certificate -->
+        <div class="certificate-wrapper">
+            <div class="certificate">
+                <div class="corner top-left"></div>
+                <div class="corner top-right"></div>
+                <div class="corner bottom-left"></div>
+                <div class="corner bottom-right"></div>
+
+                <img src="/static/ruet.png" alt="RUET Logo" class="logo logo-left">
+                <img src="/static/rcsc.png" alt="RCSC Logo" class="logo logo-right">
+
+                <div class="event-badge">
+                    <img src="/static/event_logo.png" alt="Event Logo" class="event-badge-logo">
+                    <div class="event-badge-text">RUET Cyber Fest CTF 2025</div>
+                </div>
+
+                <div class="header">
+                    <h1>Certificate of Achievement</h1>
+                    <h2>This is presented to</h2>
+                </div>
+
+                <div class="content">
+                    <div class="participant-name">{{ display_name }}</div>
+                    
+                    <div class="event-details">
+                        For successfully participating and demonstrating exceptional skills in the {{ event_name }}. Your dedication and performance in solving challenges has been recognized.
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 20px;">
+                        <span class="rank-info">
+                            {% if position == 1 %}🥇{% elif position == 2 %}🥈{% elif position == 3 %}🥉{% else %}🏆{% endif %}
+                            {{ position }}{% if position == 1 %}st{% elif position == 2 %}nd{% elif position == 3 %}rd{% else %}th{% endif %} Place
+                        </span>
+                    </div>
+                </div>
+
+                <div class="signatures">
+                    <div class="sign-box">
+                        <img src="/static/signature.png" alt="Signature" style="max-width: 120px; height: auto; margin-bottom: 5px;">
+                        <div class="sign-line"></div>
+                        <div class="sign-name">A S M Mostain Billah</div>
+                        <div class="sign-title">President</div>
+                        <div class="sign-title" style="font-size: 0.7rem; margin-top: 3px;">RUET Cyber Security Club</div>
+                    </div>
+                    
+                    <div class="sign-box">
+                        <div class="sign-name">{{ event_date }}</div>
+                        <div class="sign-line"></div>
+                        <div class="sign-title">Date of Issue</div>
+                    </div>
+                </div>
+
+                <div class="footer">
+                   
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script>
+        async function downloadPNG() {
+            const certificate = document.querySelector('.certificate');
+            const canvas = await html2canvas(certificate, {
+                scale: 3,
+                backgroundColor: '#ffffff',
+                logging: false,
+                useCORS: true,
+                width: 1200,
+                height: 850
+            });
+            
+            canvas.toBlob(function(blob) {
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.download = '{{ display_name }}_{{ cert_hash }}.png';
+                link.href = url;
+                link.click();
+                URL.revokeObjectURL(url);
+            });
+        }
+    </script>
+</body>
+</html>
